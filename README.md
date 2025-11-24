@@ -6,7 +6,7 @@ This tool allows you to export configuration from one Instana backend and import
 
 1.  **Install Dependencies:**
     ```bash
-    pip install -r requirements.txt
+    nix-shell
     ```
 
 2.  **Configure Backends:**
