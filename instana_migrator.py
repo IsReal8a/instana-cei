@@ -8,7 +8,6 @@ import yaml
 import urllib3
 
 # --- Configuration ---
-
 CONFIG_FILE = "config.yaml"
 EXPORT_DIR = "export"
 
