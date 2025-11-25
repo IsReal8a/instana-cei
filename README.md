@@ -12,10 +12,11 @@ Useful for:
 ## Setup
 
 1.  **Install Dependencies:**
-    I'm using a nix-shell, you can use other approaches if needed.
 
     ```bash
-    nix-shell
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    pip3 install -r requirements.txt
     ```
 
 2.  **Configure Backends:**
