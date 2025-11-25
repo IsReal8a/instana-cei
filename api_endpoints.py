@@ -30,7 +30,8 @@ API_CONFIG = {
     "alert-configs": {
         "export_path": "/events/settings/alerts",
         "import_path": "/events/settings/alerts",
-        "import_method": "PUT"
+        "import_method": "PUT_ITERATE",
+        "id_key": "id"
     },
     "global-application-smart-alerts": {
         "export_path": "/events/settings/global-alert-configs/applications",

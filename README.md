@@ -44,6 +44,8 @@ The tool uses an `export` and `import` command structure. An `export` directory 
 
 You can export a specific configuration type or all configurations at once.
 
+While exporting the custom dashboards, if you have too many, it will take a while to export the configuration, just wait.
+
 ```bash
 # Export a single type (e.g., custom dashboards)
 python instana_migrator.py export --type custom-dashboards
