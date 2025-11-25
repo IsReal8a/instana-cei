@@ -78,29 +78,49 @@ def clean_for_import(item, config_type):
     for key in keys_to_remove:
         if key in item:
             del item[key]
+            logger.info(f"      - Removed {key}")
+    
+    # Special handling for mobile-app-config rbacTags
+    if config_type == 'mobile-app-config':
+        # The API expects rbacTags to be an array. If the export provides an
+        # empty object {} or a non-array value, it causes a deserialization error.
+        # Setting it to an empty array ensures the correct type is sent.
+        if 'rbacTags' in item:
+            logger.info("      - Ensuring rbacTags is an empty array for mobile-app-config.")
+            item['rbacTags'] = []
 
     if config_type == 'custom-dashboards':
-        logger.debug("    - Cleaning custom dashboard-specific fields...")
+        logger.info("    - Cleaning custom dashboard-specific fields...")
+
         if 'ownerId' in item:
             del item['ownerId']
-            logger.debug("      - Removed ownerId")
+            logger.info("      - Removed ownerId")
 
-        if 'accessRules' in item and isinstance(item['accessRules'], list):
-            original_rules_count = len(item['accessRules'])
-            item['accessRules'] = [rule for rule in item['accessRules'] if rule.get('relationType') != 'USER']
-            new_rules_count = len(item['accessRules'])
-            if original_rules_count != new_rules_count:
-                logger.debug(f"      - Removed {original_rules_count - new_rules_count} USER access rules.")
+        # Ensure accessRules is a list, initialize if not present
+        if 'accessRules' not in item or not isinstance(item['accessRules'], list):
+            item['accessRules'] = []
 
-            has_global_read = any(rule.get('relationType') == 'GLOBAL' and rule.get('accessType') == 'READ' for rule in item['accessRules'])
-            if not has_global_read:
-                item['accessRules'].append({'accessType': 'READ', 'relationType': 'GLOBAL'})
-                logger.debug("      - Added default GLOBAL READ access rule.")
+        # Remove user-specific rules
+        original_rules_count = len(item['accessRules'])
+        item['accessRules'] = [rule for rule in item['accessRules'] if rule.get('relationType') != 'USER']
+        new_rules_count = len(item['accessRules'])
+        if original_rules_count != new_rules_count:
+            logger.debug(f"      - Removed {original_rules_count - new_rules_count} USER access rules.")
 
-            has_write_access = any(rule.get('accessType') == 'READ_WRITE' for rule in item['accessRules'])
-            if not has_write_access:
-                item['accessRules'].append({'accessType': 'READ_WRITE', 'relationType': 'GLOBAL'})
-                logger.debug("      - Added default GLOBAL READ_WRITE access rule.")
+        # Ensure default GLOBAL READ access rule exists
+        has_global_read = any(rule.get('relationType') == 'GLOBAL' and rule.get('accessType') == 'READ' for rule in item['accessRules'])
+        if not has_global_read:
+            # Add rule without 'relatedId' as per API documentation
+            item['accessRules'].append({'accessType': 'READ', 'relationType': 'GLOBAL'})
+            logger.debug("      - Added default GLOBAL READ access rule.")
+
+        # Ensure default GLOBAL READ_WRITE access rule exists
+        has_global_write_access = any(rule.get('relationType') == 'GLOBAL' and rule.get('accessType') == 'READ_WRITE' for rule in item['accessRules'])
+        if not has_global_write_access:
+            # Add rule without 'relatedId' as per API documentation
+            item['accessRules'].append({'accessType': 'READ_WRITE', 'relationType': 'GLOBAL'})
+            logger.debug("      - Added default GLOBAL READ_WRITE access rule.")
+
 
     if config_type == 'manual-services':
         tfe = item.get('tagFilterExpression')

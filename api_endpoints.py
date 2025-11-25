@@ -4,6 +4,7 @@ This module contains the API endpoint configuration for the Instana Migrator.
 """
 
 API_CONFIG = {
+    # Working API endpoints
     "applications": {
         "export_path": "/application-monitoring/settings/application",
         "import_path": "/application-monitoring/settings/application",
@@ -49,6 +50,23 @@ API_CONFIG = {
         "import_path": "/events/settings/custom-payload-configurations",
         "import_method": "PUT"
     },
+        "maintenance": {
+        "export_path": "/settings/v2/maintenance",
+        "import_path": "/settings/v2/maintenance",
+        "import_method": "PUT_ITERATE",
+        "id_key": "id"
+    },
+    "api-tokens": {
+        "export_path": "/settings/api-tokens",
+        "import_path": "/settings/api-tokens",
+        "import_method": "POST"
+    },
+    "groups": {
+        "export_path": "/settings/rbac/groups",
+        "import_path": "/settings/rbac/groups",
+        "import_method": "POST"
+    },
+    # Not working API endpoints
     "synthetic-tests": {
         "export_path": "/synthetics/settings/tests",
         "import_path": "/synthetics/settings/tests",
@@ -72,23 +90,8 @@ API_CONFIG = {
     "custom-dashboards": {
         "export_path": "/custom-dashboard",
         "import_path": "/custom-dashboard",
-        "import_method": "POST"
-    },
-    "maintenance": {
-        "export_path": "/settings/v2/maintenance",
-        "import_path": "/settings/v2/maintenance",
-        "import_method": "PUT_ITERATE",
+        "import_method": "POST",
         "id_key": "id"
-    },
-    "api-tokens": {
-        "export_path": "/settings/api-tokens",
-        "import_path": "/settings/api-tokens",
-        "import_method": "POST"
-    },
-    "groups": {
-        "export_path": "/settings/rbac/groups",
-        "import_path": "/settings/rbac/groups",
-        "import_method": "POST"
     },
     "website-config": {
         "export_path": "/website-monitoring/config",

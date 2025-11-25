@@ -7,7 +7,10 @@ Useful for:
 - Backup
 - Disaster recovery
 
-**NOTE**: This is a work in progress project and needs to be tested by more Instana users... it can be use in a test environment but the more feedback the better to promote it for Production environments.
+## Important 
+This is a work in progress project and needs to be tested by more Instana users... it can be use in a test environment but the more feedback the better to promote it for Production environments.
+Please check `api_endpoints.py` to see which API endpoints are working.
+For some weird reason the Custom Dashboards stopped to work, need to throubleshoot that.
 
 ## Setup
 
