@@ -67,8 +67,10 @@ def clean_for_import(item, config_type):
 
     if config_type == 'global-custom-payloads':
         keys_to_remove.extend(['lastUpdated', 'version'])
-    elif config_type == 'sli':
+    elif (config_type == 'sli' or config_type == 'custom-event-specifications'):
         keys_to_remove.append('lastUpdated')
+    # elif config_type == 'custom-event-specifications':
+    #     keys_to_remove.append('lastUpdated')
     elif config_type == 'maintenance':
         # Keep the 'id' for the PUT_ITERATE method, but remove other server-generated fields
         keys_to_remove.extend(['lastUpdated', 'state', 'validVersion', 'occurrence', 'invalid'])
@@ -211,8 +213,13 @@ def import_config(config_type, backend_config, export_dir, dry_run=False):
         success_count = 0
         for item in data:
             item_id = 'N/A'
+            """ Search for the id_key, if not found then we need to use the name (if available) """
             if id_key and item.get(id_key):
                 item_id = item.get(id_key)
+            elif 'name' in item:
+                item_id = item.get('name')
+            elif 'title' in item:
+                item_id = item.get('title')
 
             payload = clean_for_import(item.copy(), config_type)
             
@@ -274,6 +281,7 @@ def import_config(config_type, backend_config, export_dir, dry_run=False):
 
         logger.info(f"Import complete. Successfully processed {success_count}/{len(data)} items.")
 
+    logger.info(f"You can find all output on the dry_run_output.log file for reference.")
 
 # --- Main Execution ---
 

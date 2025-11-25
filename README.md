@@ -1,16 +1,25 @@
-# Instana Configuration Migrator
+# Instana Configuration Exporter/Importer
 
-This tool allows you to export configuration from one Instana backend and import it into another.
+This tool allows you to export/import Instana's backend configuration.
+
+Useful for:
+- Migrations
+- Backup
+- Disaster recovery
+
+**NOTE**: This is a work in progress project and needs to be tested by more Instana users... it can be use in a test environment but the more feedback the better to promote it for Production environments.
 
 ## Setup
 
 1.  **Install Dependencies:**
+    I'm using a nix-shell, you can use other approaches if needed.
+
     ```bash
     nix-shell
     ```
 
 2.  **Configure Backends:**
-    Edit the `config.yaml` file to include the full API URL (including the `/api` suffix) and a generated API token for both your source and destination Instana backends.
+    Create and edit the `config.yaml` file to include the full API URL (including the `/api` suffix) and an API token for both, your source and destination Instana backends.
 
     To connect to a backend with a self-signed SSL certificate, set `allow_self_signed_certs: true` for that backend configuration.
 
@@ -28,7 +37,7 @@ This tool allows you to export configuration from one Instana backend and import
 
 ## Usage
 
-The tool uses an `export` and `import` command structure. An `export` directory will be created to store the configuration files.
+The tool uses an `export` and `import` command structure. An `export` directory will be created to store the configuration files. It will create a log file where you can see the full output (useful when using the `all` configuration type).
 
 ### Exporting
 
@@ -37,21 +46,25 @@ You can export a specific configuration type or all configurations at once.
 ```bash
 # Export a single type (e.g., custom dashboards)
 python instana_migrator.py export --type custom-dashboards
+```
 
+```bash
 # Export all available configurations
 python instana_migrator.py export --type all
 ```
 
 ### Importing
 
-You can import a specific configuration type or all configurations at once.
+You can import a specific configuration type or all configurations at once. It is important to note that you can use the `--dry-run` option and test before apply changes.
 
 ```bash
 # Import a single type (e.g., custom dashboards)
-python instana_migrator.py import --type custom-dashboards
+python instana_migrator.py import --type custom-dashboards --dry-run
+```
 
+```bash
 # Import all available configurations
-python instana_migrator.py import --type all
+python instana_migrator.py import --type all --dry-run
 ```
 
 ### Supported Configuration Types
@@ -60,11 +73,9 @@ The `--type` flag accepts the following values:
 - `applications`
 - `services`
 - `manual-services`
-- `endpoints`
-- `http-endpoints`
 - `alert-channels`
 - `alert-configs`
-- `global-smart-alerts`
+- `global-application-smart-alerts`
 - `custom-event-specifications`
 - `global-custom-payloads`
 - `synthetic-tests`
