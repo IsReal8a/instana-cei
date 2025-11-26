@@ -76,6 +76,7 @@ python instana_migrator.py import --type all --dry-run
 ### Supported Configuration Types
 
 The `--type` flag accepts the following values:
+Working
 - `applications`
 - `services`
 - `manual-services`
@@ -84,14 +85,16 @@ The `--type` flag accepts the following values:
 - `global-application-smart-alerts`
 - `custom-event-specifications`
 - `global-custom-payloads`
+- `maintenance`
+- `api-tokens`
+- `groups`
+- `custom-dashboards`
+- `all`
+
+Not Working
 - `synthetic-tests`
 - `synthetic-credentials`
 - `slo`
 - `sli`
-- `custom-dashboards`
-- `maintenance`
-- `api-tokens`
-- `groups`
 - `website-config`
 - `mobile-app-config`
-- `all`

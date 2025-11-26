@@ -50,7 +50,7 @@ API_CONFIG = {
         "import_path": "/events/settings/custom-payload-configurations",
         "import_method": "PUT"
     },
-        "maintenance": {
+    "maintenance": {
         "export_path": "/settings/v2/maintenance",
         "import_path": "/settings/v2/maintenance",
         "import_method": "PUT_ITERATE",
@@ -65,6 +65,12 @@ API_CONFIG = {
         "export_path": "/settings/rbac/groups",
         "import_path": "/settings/rbac/groups",
         "import_method": "POST"
+    },
+    "custom-dashboards": {
+        "export_path": "/custom-dashboard",
+        "import_path": "/custom-dashboard",
+        "import_method": "POST",
+        "id_key": "id"
     },
     # Not working API endpoints
     "synthetic-tests": {
@@ -86,12 +92,6 @@ API_CONFIG = {
         "export_path": "/settings/sli",
         "import_path": "/settings/sli",
         "import_method": "POST"
-    },
-    "custom-dashboards": {
-        "export_path": "/custom-dashboard",
-        "import_path": "/custom-dashboard",
-        "import_method": "POST",
-        "id_key": "id"
     },
     "website-config": {
         "export_path": "/website-monitoring/config",
