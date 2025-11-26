@@ -72,7 +72,7 @@ def clean_for_import(item, config_type):
     elif config_type == 'maintenance':
         # Keep the 'id' for the PUT_ITERATE method, but remove other server-generated fields
         keys_to_remove.extend(['lastUpdated', 'state', 'validVersion', 'occurrence', 'invalid'])
-    elif config_type == 'groups':
+    elif config_type == 'groups' or config_type == "custom-dashboards":
         keys_to_remove.append('id')
 
     for key in keys_to_remove:
@@ -90,36 +90,39 @@ def clean_for_import(item, config_type):
             item['rbacTags'] = []
 
     if config_type == 'custom-dashboards':
-        logger.info("    - Cleaning custom dashboard-specific fields...")
+        logger.info(" - Cleaning custom dashboard-specific fields...")
 
+        # Elimina ownerId
         if 'ownerId' in item:
             del item['ownerId']
-            logger.info("      - Removed ownerId")
+            logger.info(" - Removed ownerId")
 
-        # Ensure accessRules is a list, initialize if not present
-        if 'accessRules' not in item or not isinstance(item['accessRules'], list):
-            item['accessRules'] = []
+        # Normaliza accessRules
+        rules = item.get('accessRules', [])
+        if not isinstance(rules, list):
+            rules = []
 
-        # Remove user-specific rules
-        original_rules_count = len(item['accessRules'])
-        item['accessRules'] = [rule for rule in item['accessRules'] if rule.get('relationType') != 'USER']
-        new_rules_count = len(item['accessRules'])
-        if original_rules_count != new_rules_count:
-            logger.debug(f"      - Removed {original_rules_count - new_rules_count} USER access rules.")
+        # 1) Elimina reglas USER y cualquier otra no-GLOBAL (opcional)
+        rules = [r for r in rules if r.get('relationType') == 'GLOBAL']
 
-        # Ensure default GLOBAL READ access rule exists
-        has_global_read = any(rule.get('relationType') == 'GLOBAL' and rule.get('accessType') == 'READ' for rule in item['accessRules'])
+        # 2) Limpia relatedId en reglas GLOBAL (no es necesario/aceptado)
+        for r in rules:
+            if 'relatedId' in r:
+                r.pop('relatedId', None)
+
+        # 3) Asegura GLOBAL READ
+        has_global_read = any(r.get('relationType') == 'GLOBAL' and r.get('accessType') == 'READ' for r in rules)
         if not has_global_read:
-            # Add rule without 'relatedId' as per API documentation
-            item['accessRules'].append({'accessType': 'READ', 'relationType': 'GLOBAL'})
-            logger.debug("      - Added default GLOBAL READ access rule.")
+            rules.append({'accessType': 'READ', 'relationType': 'GLOBAL'})
+            logger.debug(" - Added default GLOBAL READ access rule.")
 
-        # Ensure default GLOBAL READ_WRITE access rule exists
-        has_global_write_access = any(rule.get('relationType') == 'GLOBAL' and rule.get('accessType') == 'READ_WRITE' for rule in item['accessRules'])
-        if not has_global_write_access:
-            # Add rule without 'relatedId' as per API documentation
-            item['accessRules'].append({'accessType': 'READ_WRITE', 'relationType': 'GLOBAL'})
-            logger.debug("      - Added default GLOBAL READ_WRITE access rule.")
+        # 4) Si el backend exige escritura, asegura al menos una READ_WRITE
+        has_write = any(r.get('accessType') == 'READ_WRITE' for r in rules)
+        if not has_write:
+            rules.append({'accessType': 'READ_WRITE', 'relationType': 'GLOBAL'})
+            logger.debug(" - Added default GLOBAL READ_WRITE access rule.")
+
+        item['accessRules'] = rules
 
 
     if config_type == 'manual-services':
