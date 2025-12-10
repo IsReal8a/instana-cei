@@ -1,5 +1,7 @@
 # Instana Configuration Exporter/Importer
 
+NOTE: This project has been archived in favor of the [Official Instana Configuration migration tool](https://github.com/instana/automation-with-apis)
+
 This tool allows you to export/import Instana's backend configuration.
 
 Useful for:
